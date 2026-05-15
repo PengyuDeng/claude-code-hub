@@ -622,7 +622,7 @@ export const messageRequestArtifacts = pgTable('message_request_artifact', {
     .notNull()
     .references(() => messageRequest.id, { onDelete: 'cascade' }),
   key: varchar('key').notNull(),
-  requestBody: text('request_body'),
+  userText: text('user_text'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 }, (table) => ({

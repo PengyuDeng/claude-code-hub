@@ -34,12 +34,16 @@ function buildSession(): ProxySession {
       apiKey: "sk-company",
     },
     request: {
-      buffer: new TextEncoder().encode(
-        '{ "model": "gpt-5.5", "messages": [{ "role": "user", "content": "original" }] }'
-      ).buffer,
-      message: { model: "gpt-5.5", messages: [{ role: "user", content: "current" }] },
+      message: {
+        model: "gpt-5.5",
+        messages: [
+          { role: "user", content: "old context" },
+          { role: "assistant", content: "ok" },
+          { role: "user", content: "current user text" },
+        ],
+      },
     },
-    getMessages: () => [{ role: "user", content: "current" }],
+    getMessages: () => [{ role: "user", content: "current user text" }],
   } as unknown as ProxySession;
 }
 
@@ -58,10 +62,9 @@ describe("raw message artifacts", () => {
     expect(upsertRawMessageArtifactMock).not.toHaveBeenCalled();
   });
 
-  test("persists captured original request body with platform key", async () => {
+  test("persists latest user text with platform key", async () => {
     envConfig.STORE_RAW_MESSAGE_ARTIFACTS_TO_DB = true;
     const session = buildSession();
-    const body = '{ "model": "gpt-5.5", "messages": [{ "role": "user", "content": "original" }] }';
 
     captureRawClientMessageArtifact(session);
     await persistRawClientMessageArtifact(session);
@@ -70,7 +73,60 @@ describe("raw message artifacts", () => {
       messageRequestId: 42,
       createdAt: session.messageContext?.createdAt,
       key: "sk-company",
-      requestBody: body,
+      userText: "current user text",
     });
+  });
+
+  test("extracts user text from responses input blocks", async () => {
+    envConfig.STORE_RAW_MESSAGE_ARTIFACTS_TO_DB = true;
+    const session = buildSession();
+    session.request.message = {
+      model: "gpt-5.5",
+      input: [
+        { role: "user", content: [{ type: "input_text", text: "first input" }] },
+        { role: "assistant", content: [{ type: "output_text", text: "ok" }] },
+        { role: "user", content: [{ type: "input_text", text: "latest input" }] },
+      ],
+    };
+
+    captureRawClientMessageArtifact(session);
+    await persistRawClientMessageArtifact(session);
+
+    expect(upsertRawMessageArtifactMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userText: "latest input",
+      })
+    );
+  });
+
+  test("extracts user text from gemini contents", async () => {
+    envConfig.STORE_RAW_MESSAGE_ARTIFACTS_TO_DB = true;
+    const session = buildSession();
+    session.request.message = {
+      contents: [{ parts: [{ text: "gemini text" }] }],
+    };
+
+    captureRawClientMessageArtifact(session);
+    await persistRawClientMessageArtifact(session);
+
+    expect(upsertRawMessageArtifactMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userText: "gemini text",
+      })
+    );
+  });
+
+  test("skips persistence when user text cannot be extracted", async () => {
+    envConfig.STORE_RAW_MESSAGE_ARTIFACTS_TO_DB = true;
+    const session = buildSession();
+    session.request.message = {
+      model: "gpt-5.5",
+      messages: [{ role: "assistant", content: "ok" }],
+    };
+
+    captureRawClientMessageArtifact(session);
+    await persistRawClientMessageArtifact(session);
+
+    expect(upsertRawMessageArtifactMock).not.toHaveBeenCalled();
   });
 });

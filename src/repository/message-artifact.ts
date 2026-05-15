@@ -9,7 +9,7 @@ export type RawMessageArtifactPatch = {
   messageRequestId: number;
   createdAt: Date;
   key: string;
-  requestBody: string;
+  userText: string;
 };
 
 function buildArtifactRows(patch: RawMessageArtifactPatch) {
@@ -23,10 +23,10 @@ function buildArtifactRows(patch: RawMessageArtifactPatch) {
   };
   const update: Record<string, unknown> = {
     key: patch.key,
-    requestBody: patch.requestBody,
+    userText: patch.userText,
     updatedAt: new Date(),
   };
-  values.requestBody = patch.requestBody;
+  values.userText = patch.userText;
 
   return {
     values: values as ArtifactInsert,

@@ -107,9 +107,9 @@ export const EnvSchema = z.object({
   // - 该开关只影响“写入 Redis 的响应体内容”，不影响内部统计逻辑读取响应体（例如 tokens/费用统计、SSE 结束后的假 200 检测）。
   // - message 内容是否脱敏仍由 STORE_SESSION_MESSAGES 控制。
   STORE_SESSION_RESPONSE_BODY: z.string().default("true").transform(booleanTransform),
-  // 原始请求体审计落库开关
-  // - false (默认)：不向数据库持久化客户端原始请求体
-  // - true：向 message_request_artifact 写入请求时间、平台用户 Key、原始请求体
+  // 用户输入文本审计落库开关
+  // - false (默认)：不向数据库持久化客户端用户输入文本
+  // - true：向 message_request_artifact 写入请求时间、平台用户 Key、用户输入文本
   STORE_RAW_MESSAGE_ARTIFACTS_TO_DB: z.string().default("false").transform(booleanTransform),
   DEBUG_MODE: z.string().default("false").transform(booleanTransform),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
