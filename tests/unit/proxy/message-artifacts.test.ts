@@ -129,4 +129,25 @@ describe("raw message artifacts", () => {
 
     expect(upsertRawMessageArtifactMock).not.toHaveBeenCalled();
   });
+
+  test("does not fall back to previous user text when latest user entry has no text", async () => {
+    envConfig.STORE_RAW_MESSAGE_ARTIFACTS_TO_DB = true;
+    const session = buildSession();
+    session.request.message = {
+      model: "gpt-5.5",
+      messages: [
+        { role: "user", content: "previous prompt" },
+        { role: "assistant", content: "tool use" },
+        {
+          role: "user",
+          content: [{ type: "tool_result", tool_use_id: "toolu_1", content: "tool output" }],
+        },
+      ],
+    };
+
+    captureRawClientMessageArtifact(session);
+    await persistRawClientMessageArtifact(session);
+
+    expect(upsertRawMessageArtifactMock).not.toHaveBeenCalled();
+  });
 });

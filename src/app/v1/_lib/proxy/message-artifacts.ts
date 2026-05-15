@@ -85,9 +85,7 @@ function extractLastUserTextFromEntries(
     }
 
     const text = extractTextFromContent(entry.content ?? entry.parts);
-    if (text !== null) {
-      return text;
-    }
+    return text;
   }
 
   return null;
