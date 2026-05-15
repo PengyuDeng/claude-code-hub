@@ -5,6 +5,7 @@ import { resolveKeyUserConcurrentSessionLimits } from "@/lib/rate-limit/concurre
 import { headersToSanitizedObject, SessionManager } from "@/lib/session-manager";
 import { SessionTracker } from "@/lib/session-tracker";
 import { completeCodexSessionIdentifiers } from "../codex/session-completer";
+import { captureRawClientMessageArtifact } from "./message-artifacts";
 import type { ProxySession } from "./session";
 
 const CLIENT_HEADER_SNAPSHOT_BLOCKLIST = [
@@ -168,6 +169,8 @@ export class ProxySessionGuard {
       // 4.1 获取并设置请求序号（Session 内唯一标识每个请求）
       const requestSequence = await SessionManager.getNextRequestSequence(sessionId);
       session.setRequestSequence(requestSequence);
+
+      captureRawClientMessageArtifact(session);
 
       // 4.2 存储完整请求体与客户端端点（用于 Session 详情调试）
       // 注意：必须在后续任何格式转换/过滤前触发存储，避免记录被“后处理”污染

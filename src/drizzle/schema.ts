@@ -616,6 +616,24 @@ export const messageRequest = pgTable('message_request', {
     .where(sql`${table.deletedAt} IS NULL AND ${table.clientIp} IS NOT NULL`),
 }));
 
+export const messageRequestArtifacts = pgTable('message_request_artifact', {
+  id: serial('id').primaryKey(),
+  messageRequestId: integer('message_request_id')
+    .notNull()
+    .references(() => messageRequest.id, { onDelete: 'cascade' }),
+  key: varchar('key').notNull(),
+  requestBody: text('request_body'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+}, (table) => ({
+  messageRequestArtifactsMessageRequestIdx: uniqueIndex(
+    'idx_message_request_artifact_message_request'
+  ).on(table.messageRequestId),
+  messageRequestArtifactsKeyCreatedAtIdx: index(
+    'idx_message_request_artifact_key_created_at'
+  ).on(table.key, table.createdAt),
+}));
+
 // Model Prices table
 export const modelPrices = pgTable('model_prices', {
   id: serial('id').primaryKey(),
@@ -1126,5 +1144,16 @@ export const messageRequestRelations = relations(messageRequest, ({ one }) => ({
   provider: one(providers, {
     fields: [messageRequest.providerId],
     references: [providers.id],
+  }),
+  artifact: one(messageRequestArtifacts, {
+    fields: [messageRequest.id],
+    references: [messageRequestArtifacts.messageRequestId],
+  }),
+}));
+
+export const messageRequestArtifactsRelations = relations(messageRequestArtifacts, ({ one }) => ({
+  messageRequest: one(messageRequest, {
+    fields: [messageRequestArtifacts.messageRequestId],
+    references: [messageRequest.id],
   }),
 }));

@@ -1,5 +1,6 @@
 import { extractAnthropicEffortFromRequestBody } from "@/lib/utils/anthropic-effort";
 import { createMessageRequest } from "@/repository/message";
+import { persistRawClientMessageArtifact } from "./message-artifacts";
 import type { ProxySession } from "./session";
 
 export class ProxyMessageService {
@@ -73,5 +74,7 @@ export class ProxyMessageService {
       key: authState.key,
       apiKey: authState.apiKey,
     });
+
+    void persistRawClientMessageArtifact(session);
   }
 }
