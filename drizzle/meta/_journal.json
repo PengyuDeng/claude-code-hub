@@ -729,13 +729,6 @@
       "when": 1779003941480,
       "tag": "0103_small_master_mold",
       "breakpoints": true
-    },
-    {
-      "idx": 104,
-      "version": "7",
-      "when": 1779788731593,
-      "tag": "0104_moaning_banshee",
-      "breakpoints": true
     }
   ]
 }
