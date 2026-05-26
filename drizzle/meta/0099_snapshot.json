@@ -1,5 +1,5 @@
 {
-  "id": "6946d8d1-918d-4030-9380-b5f7e574c2e7",
+  "id": "4c0c61bd-9bd1-4468-8211-311faa7379fa",
   "prevId": "6014bb32-638d-4ca1-bb4b-16d9f3fe0e01",
   "version": "7",
   "dialect": "postgresql",
@@ -1373,108 +1373,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.message_request_artifact": {
-      "name": "message_request_artifact",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "message_request_id": {
-          "name": "message_request_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "key": {
-          "name": "key",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "request_body": {
-          "name": "request_body",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_message_request_artifact_message_request": {
-          "name": "idx_message_request_artifact_message_request",
-          "columns": [
-            {
-              "expression": "message_request_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_message_request_artifact_key_created_at": {
-          "name": "idx_message_request_artifact_key_created_at",
-          "columns": [
-            {
-              "expression": "key",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "message_request_artifact_message_request_id_message_request_id_fk": {
-          "name": "message_request_artifact_message_request_id_message_request_id_fk",
-          "tableFrom": "message_request_artifact",
-          "tableTo": "message_request",
-          "columnsFrom": [
-            "message_request_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.model_prices": {
       "name": "model_prices",
       "schema": "",
@@ -2744,6 +2642,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "custom_headers": {
+          "name": "custom_headers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
         },
         "first_byte_timeout_streaming_ms": {
           "name": "first_byte_timeout_streaming_ms",

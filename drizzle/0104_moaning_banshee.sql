@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS "message_request_artifact" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"message_request_id" integer NOT NULL,
 	"key" varchar NOT NULL,
-	"request_body" text,
+	"user_text" text,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now()
 );
