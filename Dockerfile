@@ -4,8 +4,9 @@ WORKDIR /app
 COPY package.json ./
 RUN bun install
 
-FROM oven/bun:debian AS builder
+FROM node:trixie-slim AS builder
 WORKDIR /app
+COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
